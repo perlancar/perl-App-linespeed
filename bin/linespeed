@@ -79,7 +79,7 @@ sub run {
         next unless $time - $prev_time >= 0.5;
 
         my $new_msg = sprintf(
-            "Cur speed: %6.1f%s/s  Avg: %6.1f%s/s",
+            "Cur speed: %7.3f%s/s  Avg: %7.3f%s/s",
             _with_unit($num_lines, $prev_num_lines , $time, $prev_time ),
             _with_unit($num_lines, $first_num_lines, $time, $first_time),
         );
