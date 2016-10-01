@@ -3,13 +3,10 @@
 # DATE
 # VERSION
 
-#IFBUILT
-use 5.010001;
 use strict;
 use warnings;
-#END IFBUILT
 
-use Getopt::Long;
+use Getopt::Long::Complete;
 use Time::HiRes qw(time);
 
 my %Opts = (
@@ -22,13 +19,13 @@ sub _with_unit {
     } else {
         my $s = ($n2-$n1) / ($t2-$t1);
         if ($s > 1.5e9) {
-            return ($s/1e9, "Gi");
+            return ($s/1e9, "Gi/s");
         } elsif ($s > 1.5e6) {
-            return ($s/1e6, "Mi");
+            return ($s/1e6, "Mi/s");
         } elsif ($s > 1.5e3) {
-            return ($s/1e6, "Ki");
+            return ($s/1e3, "Ki/s");
         } else {
-            return ($s, "");
+            return ($s, "/s");
         }
     }
 }
@@ -37,7 +34,7 @@ sub parse_cmdline {
     my $res = GetOptions(
         'version|v'     => sub {
             no warnings;
-            say "linespeed version $main::VERSION ($main::DATE)";
+            print "linespeed version $main::VERSION ($main::DATE)\n";
             exit 0;
         },
         'help|h'        => sub {
@@ -79,17 +76,13 @@ sub run {
         next unless $time - $prev_time >= 0.5;
 
         my $new_msg = sprintf(
-            "Cur speed: %7.3f%s/s  Avg: %7.3f%s/s",
+            "Cur speed: %8.3f%-4s  Avg: %8.3f%-4s",
             _with_unit($num_lines, $prev_num_lines , $time, $prev_time ),
             _with_unit($num_lines, $first_num_lines, $time, $first_time),
         );
 
-        # or we can also use \e[K = clear from cursor to EOL
-        $new_msg .= " " x (length $msg - length $new_msg)
-            if length $msg > length $new_msg;
-
         print "\b" x length $msg;
-        print $new_msg;
+        print $new_msg, "\e[K"; # clear to EOL
 
         $msg = $new_msg;
         $prev_num_lines = $num_lines;
