@@ -13,6 +13,4 @@ See the command-line script L<linespeed>.
 
 =head1 SEE ALSO
 
-L<numspeed> from L<App::numspeed>
-
 =cut
