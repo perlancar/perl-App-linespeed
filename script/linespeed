@@ -13,6 +13,8 @@ my %Opts = (
 );
 
 sub _with_unit {
+    no warnings 'uninitialized';
+
     my ($n2, $n1, $t2, $t1) = @_;
     if ($t2 == $t1) {
         return (0, "");
@@ -59,10 +61,26 @@ sub run {
     my $prev_num_lines;
     my ($first_num_lines, $first_time);
     my $msg = "";
+    my $time;
+
+    my $code_report = sub {
+        my $new_msg = sprintf(
+            "Cur speed: %8.3f%-4s  Avg: %8.3f%-4s  Lines: %-8d",
+            _with_unit($num_lines, $prev_num_lines , $time, $prev_time ),
+            _with_unit($num_lines, $first_num_lines, $time, $first_time),
+            $num_lines,
+        );
+
+        print "\b" x length $msg;
+        print $new_msg, "\e[K"; # clear to EOL
+
+        $msg = $new_msg;
+    };
+
     while (<>) {
         $num_lines++;
 
-        my $time = time();
+        $time = time();
 
 	unless (defined $prev_num_lines) {
             $prev_num_lines = $num_lines;
@@ -75,19 +93,14 @@ sub run {
         # don't report speed too often
         next unless $time - $prev_time >= 0.5;
 
-        my $new_msg = sprintf(
-            "Cur speed: %8.3f%-4s  Avg: %8.3f%-4s",
-            _with_unit($num_lines, $prev_num_lines , $time, $prev_time ),
-            _with_unit($num_lines, $first_num_lines, $time, $first_time),
-        );
+        $code_report->();
 
-        print "\b" x length $msg;
-        print $new_msg, "\e[K"; # clear to EOL
-
-        $msg = $new_msg;
         $prev_num_lines = $num_lines;
         $prev_time = $time;
     }
+
+    $code_report->();
+    print "\n";
 }
 
 # MAIN
