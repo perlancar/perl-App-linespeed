@@ -115,7 +115,7 @@ run();
 =head1 SYNOPSIS
 
  % tail -f some-log | linespeed
- Cur speed: 33.3/s  Avg: 31.6/s_
+ Cur speed:  542.751Ki/s  Avg:  542.751Ki/s  Lines:   928384
 
 
 =head1 DESCRIPTION
