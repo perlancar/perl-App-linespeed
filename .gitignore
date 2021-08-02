@@ -2,3 +2,4 @@ App-linespeed-*
 .build
 *~
 nytprof*
+.DS_Store
